@@ -2,7 +2,8 @@ import 'dart:async';
 
 import 'package:easy_splash_screen/easy_splash_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:moot/screens/homepage/home.dart';
+import 'package:moot/screens/homepage/admin/homeAdmin.dart';
+import 'package:moot/screens/homepage/user/homeUser.dart';
 import 'package:moot/screens/onboarding/onboarding_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
@@ -21,7 +22,11 @@ class _SplashFuturePageState extends State<SplashFuturePage> {
     });
     SharedPreferences prefs = await SharedPreferences.getInstance();
     if (prefs.containsKey('token')) {
-      return Future.value(const HomePageScreen());
+      if (prefs.getString('role') == 'admin') {
+        return Future.value(HomePageAdmin());
+      } else {
+        return Future.value(HomeUser());
+      }
     }
     return Future.value(const OnBoardingPage());
   }

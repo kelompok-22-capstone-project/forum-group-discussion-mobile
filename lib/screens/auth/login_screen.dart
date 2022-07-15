@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:moot/Animation/FadeAnimation.dart';
 import 'package:moot/components/RoundedButton.dart';
 import 'package:moot/components/theme.dart';
-import 'package:moot/screens/homepage/home.dart';
+import 'package:moot/screens/homepage/admin/homeAdmin.dart';
 import 'package:moot/models/provider/auth_provider.dart';
 import 'package:moot/screens/auth/register_screen.dart';
+import 'package:moot/screens/homepage/user/homeUser.dart';
 import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -39,7 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
             width: MediaQuery.of(context).size.width,
             child: Column(
               children: <Widget>[
-                const SizedBox(height: 60),
+                SizedBox(height: MediaQuery.of(context).size.height / 8),
                 FadeAnimation(
                   1.8,
                   Container(
@@ -173,8 +174,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   color: createMaterialColor(const Color(0xff4C74D9)), fontWeight: FontWeight.bold),
                             ),
                             onPressed: () {
-                              Navigator.pushAndRemoveUntil(context,
-                                  MaterialPageRoute(builder: (context) => const HomePageScreen()), (route) => false);
+                              Navigator.pushAndRemoveUntil(
+                                  context, MaterialPageRoute(builder: (context) => HomePageAdmin()), (route) => false);
                             },
                           ),
                         ),
@@ -192,17 +193,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             if (isLoading) {
                               return const CircularProgressIndicator();
                             }
-                            if (isError) {
-                              Future.delayed(
-                                Duration.zero,
-                                () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Wrong username or password!')),
-                                  );
-                                  value.changeState(AuthProviderState.none);
-                                },
-                              );
-                            }
 
                             return RoundedButtonWidget(
                               buttonText: 'Login',
@@ -213,21 +203,26 @@ class _LoginScreenState extends State<LoginScreen> {
                                     _usernameController.text.trim(), _passwordController.text.trim());
 
                                 String? message = value.login?.message;
+                                String? errorMessage = value.errorMessage;
 
                                 if (value.login != null) {
                                   // ignore: use_build_context_synchronously
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(content: Text("$message")),
                                   );
-                                  // ignore: use_build_context_synchronously
-                                  Navigator.pushAndRemoveUntil(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => const HomePageScreen()),
-                                      (route) => false);
+                                  if (value.login!.data!.role == 'admin') {
+                                    // ignore: use_build_context_synchronously
+                                    Navigator.pushAndRemoveUntil(context,
+                                        MaterialPageRoute(builder: (context) => HomePageAdmin()), (route) => false);
+                                  } else {
+                                    // ignore: use_build_context_synchronously
+                                    Navigator.pushAndRemoveUntil(
+                                        context, MaterialPageRoute(builder: (context) => HomeUser()), (route) => false);
+                                  }
                                 } else {
                                   // ignore: use_build_context_synchronously
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Wrong username or password!')),
+                                    SnackBar(content: Text("$errorMessage")),
                                   );
                                 }
                               },

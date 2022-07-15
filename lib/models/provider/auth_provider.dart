@@ -39,6 +39,7 @@ class AuthProvider extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       changeState(AuthProviderState.error);
+      errorMessage = e.toString();
       print('error bos $e');
     }
   }

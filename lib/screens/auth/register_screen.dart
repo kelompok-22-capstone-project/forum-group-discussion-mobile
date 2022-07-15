@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:moot/Animation/FadeAnimation.dart';
 import 'package:moot/components/RoundedButton.dart';
@@ -23,6 +25,17 @@ class _LoginScreenState extends State<RegisterScreen> {
   @override
   void initState() {
     super.initState();
+  }
+
+  bool validateEmail(String? value) {
+    String pattern = r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]"
+        r"{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]"
+        r"{0,253}[a-zA-Z0-9])?)*$";
+    RegExp regex = RegExp(pattern);
+    if (value == null || value.isEmpty || !regex.hasMatch(value))
+      return false;
+    else
+      return true;
   }
 
   @override
@@ -115,6 +128,9 @@ class _LoginScreenState extends State<RegisterScreen> {
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Please Enter Your Email';
+                              } else if (!RegExp(r"^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$")
+                                  .hasMatch(value ?? "")) {
+                                return 'Please Enter Valid Email';
                               }
                               return null;
                             },
