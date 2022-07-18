@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:moot/components/theme.dart';
-import 'package:moot/models/navigation_item.dart';
+
 import 'package:moot/models/provider/navigation_provider.dart';
 import 'package:moot/models/provider/user_provider.dart';
 import 'package:moot/screens/homepage/user/SearchUser.dart';

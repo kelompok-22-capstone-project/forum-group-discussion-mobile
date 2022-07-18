@@ -8,6 +8,7 @@ import 'package:moot/models/comment.dart';
 import 'package:moot/models/error_Respond.dart';
 import 'package:moot/models/login.dart';
 import 'package:moot/models/register.dart';
+import 'package:moot/models/report.dart';
 import 'package:moot/models/thread.dart';
 import 'package:moot/models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -83,6 +84,30 @@ class ApiService {
     return thread;
   }
 
+  Future<PostThread?> postReport(String username, String commentID, String reason) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    PostThread? thread;
+
+    try {
+      var response = await _dio.post("$_baseUrl/reports",
+          options: Options(headers: {
+            "API-Key": "2ry3HBOBLi1YkCma49pdnH3RpMguwgNZ1bvU2eqCOzZg2y0g2j",
+            "Authorization": "Bearer $token"
+          }),
+          data: {"username": username, "commentID": commentID, "reason": reason});
+      if (response.statusCode == 201) {
+        Map<String, dynamic> data = response.data;
+        thread = PostThread.fromJson(data);
+      }
+    } on DioError catch (e) {
+      final defaultError = ErrorRespond.fromJson(e.response?.data);
+      debugPrint(e.message);
+      throw "${defaultError.message}";
+    }
+    return thread;
+  }
+
   Future<List<ThreadData>?> getThread(int page, int limit, String search) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
@@ -133,6 +158,32 @@ class ApiService {
     return thread;
   }
 
+  Future<List<Moderators>?> getModeratorByIdThread(String id) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    List<Moderators>? thread = [];
+
+    try {
+      var response = await _dio.get(
+        "$_baseUrl/threads/$id",
+        options: Options(headers: {
+          "API-Key": "2ry3HBOBLi1YkCma49pdnH3RpMguwgNZ1bvU2eqCOzZg2y0g2j",
+          "Authorization": "Bearer $token"
+        }),
+      );
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = response.data;
+        List listData = data["data"]["moderators"];
+        thread = listData.map((e) => Moderators.fromJson(e)).toList();
+      }
+    } on DioError catch (e) {
+      final defaultError = ErrorRespond.fromJson(e.response?.data);
+      debugPrint(e.message);
+      throw "${defaultError.message}";
+    }
+    return thread;
+  }
+
   Future<List<ListData>?> getThreadComment(String id, int page, int limit) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
@@ -156,6 +207,26 @@ class ApiService {
       throw "${defaultError.message}";
     }
     return comment;
+  }
+
+  Future<bool> deleteThread(String id) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    try {
+      var response = await _dio.delete("$_baseUrl/threads/$id",
+          options: Options(headers: {
+            "API-Key": "2ry3HBOBLi1YkCma49pdnH3RpMguwgNZ1bvU2eqCOzZg2y0g2j",
+            "Authorization": "Bearer $token"
+          }));
+      if (response.statusCode == 204) {
+        return true;
+      }
+    } on DioError catch (e) {
+      final defaultError = ErrorRespond.fromJson(e.response?.data);
+      debugPrint(e.message);
+      throw "${defaultError.message}";
+    }
+    return false;
   }
 
   Future<bool> postComment(String id, String comment) async {
@@ -203,6 +274,71 @@ class ApiService {
     return comment;
   }
 
+  Future<PostThread?> postCategory(String name, String desc) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    PostThread? category;
+
+    try {
+      var response = await _dio.post("$_baseUrl/categories",
+          options: Options(headers: {
+            "API-Key": "2ry3HBOBLi1YkCma49pdnH3RpMguwgNZ1bvU2eqCOzZg2y0g2j",
+            "Authorization": "Bearer $token"
+          }),
+          data: {"name": name, "description": desc});
+      if (response.statusCode == 201) {
+        Map<String, dynamic> data = response.data;
+        category = PostThread.fromJson(data);
+      }
+    } on DioError catch (e) {
+      final defaultError = ErrorRespond.fromJson(e.response?.data);
+      debugPrint(e.message);
+      throw "${defaultError.message}";
+    }
+    return category;
+  }
+
+  Future<bool> putUpdateCategory(String id, String name, String desc) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    try {
+      var response = await _dio.put("$_baseUrl/categories/$id",
+          options: Options(headers: {
+            "API-Key": "2ry3HBOBLi1YkCma49pdnH3RpMguwgNZ1bvU2eqCOzZg2y0g2j",
+            "Authorization": "Bearer $token"
+          }),
+          data: {"name": name, "description": desc});
+      if (response.statusCode == 204) {
+        return true;
+      }
+    } on DioError catch (e) {
+      final defaultError = ErrorRespond.fromJson(e.response?.data);
+      debugPrint(e.message);
+      throw "${defaultError.message}";
+    }
+    return false;
+  }
+
+  Future<bool> deleteCategory(String id) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    try {
+      var response = await _dio.delete("$_baseUrl/categories/$id",
+          options: Options(headers: {
+            "API-Key": "2ry3HBOBLi1YkCma49pdnH3RpMguwgNZ1bvU2eqCOzZg2y0g2j",
+            "Authorization": "Bearer $token"
+          }));
+      if (response.statusCode == 204) {
+        return true;
+      }
+    } on DioError catch (e) {
+      final defaultError = ErrorRespond.fromJson(e.response?.data);
+      debugPrint(e.message);
+      throw "${defaultError.message}";
+    }
+    return false;
+  }
+
   Future<bool> putLikeThread(String id) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
@@ -212,6 +348,70 @@ class ApiService {
             "API-Key": "2ry3HBOBLi1YkCma49pdnH3RpMguwgNZ1bvU2eqCOzZg2y0g2j",
             "Authorization": "Bearer $token"
           }));
+      if (response.statusCode == 204) {
+        return true;
+      }
+    } on DioError catch (e) {
+      final defaultError = ErrorRespond.fromJson(e.response?.data);
+      debugPrint(e.message);
+      throw "${defaultError.message}";
+    }
+    return false;
+  }
+
+  Future<bool> putModeratorAdd(String username, String id) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    try {
+      var response = await _dio.put("$_baseUrl/threads/$id/moderators/add",
+          options: Options(headers: {
+            "API-Key": "2ry3HBOBLi1YkCma49pdnH3RpMguwgNZ1bvU2eqCOzZg2y0g2j",
+            "Authorization": "Bearer $token"
+          }),
+          data: {"username": username});
+      if (response.statusCode == 204) {
+        return true;
+      }
+    } on DioError catch (e) {
+      final defaultError = ErrorRespond.fromJson(e.response?.data);
+      debugPrint(e.message);
+      throw "${defaultError.message}";
+    }
+    return false;
+  }
+
+  Future<bool> putModeratorDelete(String username, String id) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    try {
+      var response = await _dio.put("$_baseUrl/threads/$id/moderators/remove",
+          options: Options(headers: {
+            "API-Key": "2ry3HBOBLi1YkCma49pdnH3RpMguwgNZ1bvU2eqCOzZg2y0g2j",
+            "Authorization": "Bearer $token"
+          }),
+          data: {"username": username});
+      if (response.statusCode == 204) {
+        return true;
+      }
+    } on DioError catch (e) {
+      final defaultError = ErrorRespond.fromJson(e.response?.data);
+      debugPrint(e.message);
+      throw "${defaultError.message}";
+    }
+    return false;
+  }
+
+  Future<bool> putFollowUser(String username) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    try {
+      var response = await _dio.put(
+        "$_baseUrl/user/$username/follow",
+        options: Options(headers: {
+          "API-Key": "2ry3HBOBLi1YkCma49pdnH3RpMguwgNZ1bvU2eqCOzZg2y0g2j",
+          "Authorization": "Bearer $token"
+        }),
+      );
       if (response.statusCode == 204) {
         return true;
       }
@@ -359,6 +559,26 @@ class ApiService {
     return userData;
   }
 
+  Future<bool> putBanUser(String username) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    try {
+      var response = await _dio.put("$_baseUrl/$username/banned",
+          options: Options(headers: {
+            "API-Key": "2ry3HBOBLi1YkCma49pdnH3RpMguwgNZ1bvU2eqCOzZg2y0g2j",
+            "Authorization": "Bearer $token"
+          }));
+      if (response.statusCode == 204) {
+        return true;
+      }
+    } on DioError catch (e) {
+      final defaultError = ErrorRespond.fromJson(e.response?.data);
+      debugPrint(e.message);
+      throw "${defaultError.message}";
+    }
+    return false;
+  }
+
   Future<Admin?> getAdminDasboard() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
@@ -390,5 +610,30 @@ class ApiService {
       }
     }
     return adminData;
+  }
+
+  Future<List<ReportData>?> getAllReport(String status, int page, int limit) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    List<ReportData>? report = [];
+
+    try {
+      var response = await _dio.get("$_baseUrl/reports",
+          options: Options(headers: {
+            "API-Key": "2ry3HBOBLi1YkCma49pdnH3RpMguwgNZ1bvU2eqCOzZg2y0g2j",
+            "Authorization": "Bearer $token"
+          }),
+          queryParameters: {"status": status, "page": page, "limit": limit});
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = response.data;
+        List listData = data["data"]["list"];
+        report = listData.map((e) => ReportData.fromJson(e)).toList();
+      }
+    } on DioError catch (e) {
+      final defaultError = ErrorRespond.fromJson(e.response?.data);
+      debugPrint(e.message);
+      throw "${defaultError.message}";
+    }
+    return report;
   }
 }

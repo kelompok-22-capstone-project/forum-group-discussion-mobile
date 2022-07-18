@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:moot/components/CategoryButton.dart';
 import 'package:moot/components/ContentTextButton.dart';
 import 'package:moot/models/provider/auth_provider.dart';
+import 'package:moot/models/provider/navigation_provider.dart';
 import 'package:moot/models/provider/thread_provider.dart';
 import 'package:moot/models/provider/user_provider.dart';
 import 'package:moot/screens/auth/login_screen.dart';
@@ -29,13 +30,10 @@ class _ProfileUser extends State<ProfileUser> {
         await provider.getUserByUsername(widget.username);
         await provider.getThreadByUsername(widget.username, 1, 10);
         await provider.changeIsFriend(true);
-        print("cek1 ${provider.isFriend}");
       } else {
         await provider.getThreadByUsername("$username", 1, 10);
         await provider.changeIsFriend(false);
-        print("cek2 ${provider.isFriend}");
       }
-      print("username : $username, frinds user : ${widget.username}");
     });
   }
 
@@ -46,10 +44,11 @@ class _ProfileUser extends State<ProfileUser> {
           actions: [
             IconButton(
               onPressed: () {
-                if (!Provider.of<UserProvider>(context, listen: true).isFriend) {
+                if (!Provider.of<UserProvider>(context, listen: false).isFriend) {
                   context.read<AuthProvider>().logoutUser();
                   Navigator.pushAndRemoveUntil(
                       context, MaterialPageRoute(builder: (context) => const LoginScreen()), (route) => false);
+                  context.read<NavigationProvider>().setBottomNavItem(0);
                 }
               },
               icon: const Icon(Icons.logout),
@@ -144,6 +143,29 @@ class _ProfileUser extends State<ProfileUser> {
                         ],
                       ),
                     ),
+                    value.isFriend
+                        ? Container(
+                            width: MediaQuery.of(context).size.width * 0.5,
+                            child: TextButton(
+                              style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all<Color>(Color(0xff4C74D9)),
+                                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(18.0),
+                                    ),
+                                  )),
+                              child: Text(
+                                'Follow',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: Colors.white, fontSize: 17),
+                              ),
+                              onPressed: () async {
+                                await value.putFollowUser("${value.userFriendData?.data?.username}");
+                                await value.getUserByUsername(widget.username);
+                              },
+                            ),
+                          )
+                        : Container(),
                     Container(
                       height: MediaQuery.of(context).size.height * 0.6,
                       padding: const EdgeInsets.only(top: 10),

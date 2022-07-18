@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:moot/components/theme.dart';
 import 'package:moot/models/provider/thread_provider.dart';
 import 'package:provider/provider.dart';
 

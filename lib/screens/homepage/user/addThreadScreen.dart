@@ -3,7 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:moot/components/RoundedButton.dart';
 import 'package:moot/models/provider/categorie_provider.dart';
 import 'package:moot/models/provider/thread_provider.dart';
-import 'package:moot/models/provider/user_provider.dart';
+
 import 'package:moot/screens/homepage/user/navigation_bottom_widget.dart';
 import 'package:cool_dropdown/cool_dropdown.dart';
 import 'package:provider/provider.dart';
@@ -50,23 +50,12 @@ class _AddThreadScreenState extends State<AddThreadScreen> {
           ),
           actions: [
             Consumer<ThreadProvider>(builder: (context, value, _) {
-              final isLoading = value.state == ThreadProviderState.loading;
-              final isError = value.state == ThreadProviderState.error;
-
-              if (isLoading) {
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-
               return Container(
                 margin: const EdgeInsets.only(top: 10, bottom: 8, right: 15),
                 child: RoundedButtonWidget(
                     buttonText: 'Post',
                     width: 50,
                     onpressed: () async {
-                      print("title : ${_titleController.text}, desc : ${_descController.text} id : $id");
-
                       var user =
                           await value.postThreadUser(_titleController.text.trim(), _descController.text.trim(), id);
 
@@ -95,8 +84,8 @@ class _AddThreadScreenState extends State<AddThreadScreen> {
           iconTheme: const IconThemeData(color: Colors.black),
         ),
         body: Consumer<CategorieProvider>(builder: (context, value, _) {
-          final isLoading = value.state == ThreadProviderState.loading;
-          final isError = value.state == ThreadProviderState.error;
+          final isLoading = value.state == CategorieProviderState.loading;
+          final isError = value.state == CategorieProviderState.error;
 
           if (isLoading) {
             return Center(

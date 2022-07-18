@@ -1,17 +1,10 @@
-import 'dart:ui';
-
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/material.dart';
-import 'package:moot/models/provider/thread_provider.dart';
-import 'package:provider/provider.dart';
 
 class EmptyResult extends StatelessWidget {
   const EmptyResult({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final searchText = context.read<ThreadProvider>().searchText;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 30, vertical: 50),
       child: Column(
@@ -19,7 +12,7 @@ class EmptyResult extends StatelessWidget {
           Image.asset('assets/images/empty.png'),
           SizedBox(height: 50),
           Text(
-            "No result for '$searchText'",
+            "No result",
             style: TextStyle(fontSize: 23, fontWeight: FontWeight.w600),
           ),
           SizedBox(height: 10),

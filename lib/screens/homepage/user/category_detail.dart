@@ -1,7 +1,5 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+
 import 'package:moot/components/CategoryButton.dart';
 import 'package:moot/components/ContentTextButton.dart';
 import 'package:moot/models/provider/categorie_provider.dart';
@@ -67,7 +65,7 @@ class _CategoryDetailState extends State<CategoryDetail> {
           child: Column(
             children: [
               Container(
-                height: MediaQuery.of(context).size.height * 0.1,
+                height: MediaQuery.of(context).size.height * 0.25,
                 child: Card(
                   child: ListTile(
                     title: Text(
@@ -82,7 +80,7 @@ class _CategoryDetailState extends State<CategoryDetail> {
                 ),
               ),
               Container(
-                height: MediaQuery.of(context).size.height * 0.77,
+                height: MediaQuery.of(context).size.height * 0.62,
                 child: ListView.builder(
                   itemCount: value.thread?.length,
                   itemBuilder: (context, index) {

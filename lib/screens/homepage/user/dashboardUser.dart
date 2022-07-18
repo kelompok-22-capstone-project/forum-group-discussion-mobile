@@ -1,11 +1,11 @@
+import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+
 import 'package:moot/components/CategoryButton.dart';
 import 'package:moot/components/ContentTextButton.dart';
-import 'package:moot/components/RoundedButton.dart';
-import 'package:moot/models/provider/auth_provider.dart';
+
 import 'package:moot/models/provider/thread_provider.dart';
-import 'package:moot/screens/auth/login_screen.dart';
+
 import 'package:moot/screens/homepage/user/navigation_bottom_widget.dart';
 import 'package:moot/screens/homepage/user/threadDetail.dart';
 import 'package:provider/provider.dart';
@@ -59,9 +59,31 @@ class _DashboardUserState extends State<DashboardUser> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            "${value.thread?[index].title}",
-                            style: TextStyle(fontSize: 19, fontWeight: FontWeight.w600),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "${value.thread?[index].title}",
+                                style: TextStyle(fontSize: 19, fontWeight: FontWeight.w600),
+                              ),
+                              IconButton(
+                                  onPressed: () {
+                                    CoolAlert.show(
+                                      context: context,
+                                      type: CoolAlertType.confirm,
+                                      text: 'Do you want to delete this thread ?',
+                                      confirmBtnText: 'Yes',
+                                      cancelBtnText: 'No',
+                                      confirmBtnColor: Colors.green,
+                                      onConfirmBtnTap: () async {
+                                        Navigator.pop(context);
+                                        await value.deleteThread(value.thread![index].iD!);
+                                        await value.getAllThread(1, 10, '');
+                                      },
+                                    );
+                                  },
+                                  icon: Icon(Icons.remove_circle))
+                            ],
                           ),
                           ListTile(
                             contentPadding: const EdgeInsets.only(left: 0),

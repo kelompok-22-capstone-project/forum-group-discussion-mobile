@@ -33,8 +33,14 @@ class ThreadProvider extends ChangeNotifier {
   List<ListData>? _comment = [];
   List<ListData>? get comment => List.unmodifiable(_comment!);
 
+  List<Moderators>? _moderators = [];
+  List<Moderators>? get moderatos => List.unmodifiable(_moderators!);
+
   List<ListUsers>? _users = [];
   List<ListUsers>? get users => List.unmodifiable(_users!);
+
+  List<ListUsers>? _baru = [];
+  List<ListUsers>? get baru => List.unmodifiable(_baru!);
 
   final ApiService service = ApiService();
 
@@ -71,6 +77,21 @@ class ThreadProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> deleteThread(String id) async {
+    changeState(ThreadProviderState.loading);
+    try {
+      bool threadApi = await service.deleteThread(id);
+      print("thread : $threadApi");
+      _cekPutBool = threadApi;
+      changeState(ThreadProviderState.none);
+      notifyListeners();
+    } catch (e) {
+      changeState(ThreadProviderState.error);
+      print('error bos $e');
+      notifyListeners();
+    }
+  }
+
   Future<void> putLikeThread(String id) async {
     changeState(ThreadProviderState.loading);
     try {
@@ -78,7 +99,34 @@ class ThreadProvider extends ChangeNotifier {
       _cekPutBool = threadApi;
       changeState(ThreadProviderState.none);
       notifyListeners();
-      print("ini putlike");
+    } catch (e) {
+      changeState(ThreadProviderState.error);
+      print('error bos $e');
+      notifyListeners();
+    }
+  }
+
+  Future<void> putModeratorAdd(String username, String id) async {
+    changeState(ThreadProviderState.loading);
+    try {
+      bool threadApi = await service.putModeratorAdd(username, id);
+      _cekPutBool = threadApi;
+      changeState(ThreadProviderState.none);
+      notifyListeners();
+    } catch (e) {
+      changeState(ThreadProviderState.error);
+      print('error bos $e');
+      notifyListeners();
+    }
+  }
+
+  Future<void> putModeratorRemove(String username, String id) async {
+    changeState(ThreadProviderState.loading);
+    try {
+      bool threadApi = await service.putModeratorDelete(username, id);
+      _cekPutBool = threadApi;
+      changeState(ThreadProviderState.none);
+      notifyListeners();
     } catch (e) {
       changeState(ThreadProviderState.error);
       print('error bos $e');
@@ -115,10 +163,38 @@ class ThreadProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> postThreadUser(String title, String desc, String id) async {
+  Future<void> getModeratorByIdThread(String id) async {
     changeState(ThreadProviderState.loading);
     try {
-      PostThread? threadApi = await service.postThread(title, desc, id);
+      List<Moderators>? moderatorApi = await service.getModeratorByIdThread(id);
+      _moderators = moderatorApi;
+      changeState(ThreadProviderState.none);
+      notifyListeners();
+    } catch (e) {
+      changeState(ThreadProviderState.error);
+      print('error boss $e');
+      notifyListeners();
+    }
+  }
+
+  Future<void> postThreadUser(String title, String desc, String categoriId) async {
+    changeState(ThreadProviderState.loading);
+    try {
+      PostThread? threadApi = await service.postThread(title, desc, categoriId);
+      _postThread = threadApi;
+      changeState(ThreadProviderState.none);
+      notifyListeners();
+    } catch (e) {
+      changeState(ThreadProviderState.error);
+      print('error bos $e');
+      notifyListeners();
+    }
+  }
+
+  Future<void> postReport(String username, String commentID, String reason) async {
+    changeState(ThreadProviderState.loading);
+    try {
+      PostThread? threadApi = await service.postReport(username, commentID, reason);
       _postThread = threadApi;
       changeState(ThreadProviderState.none);
       notifyListeners();

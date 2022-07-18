@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:moot/components/CategoryButton.dart';
+
 import 'package:moot/components/RankingCard.dart';
 import 'package:moot/components/theme.dart';
 import 'package:moot/models/provider/user_provider.dart';
@@ -52,6 +51,9 @@ class _RankingUserState extends State<RankingUser> {
                       borderRadius: BorderRadius.circular(15)),
                   padding: const EdgeInsets.only(left: 10, top: 6),
                   child: TextFormField(
+                    onFieldSubmitted: (v) async {
+                      await value.getAllUsers(1, 20, "ranking", "active", v);
+                    },
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                       border: InputBorder.none,

@@ -1,10 +1,16 @@
+import 'package:cool_alert/cool_alert.dart';
+import 'package:custom_bottom_sheet/custom_bottom_sheet.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
+
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:moot/components/CategoryButton.dart';
 import 'package:moot/components/ContentTextButton.dart';
+import 'package:moot/components/ModeratorCard.dart';
+
+import 'package:moot/components/RemoveCard.dart';
+
 import 'package:moot/models/provider/thread_provider.dart';
+
 import 'package:provider/provider.dart';
 
 class ThreadDetail extends StatefulWidget {
@@ -31,7 +37,9 @@ class _ThreadDetailState extends State<ThreadDetail> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       var provider = Provider.of<ThreadProvider>(context, listen: false);
       final String? id = provider.thread?[widget.index].iD;
-      provider.getCommentThreadById(id!, 1, 20);
+      provider.getModeratorByIdThread(id!);
+      provider.getCommentThreadById(id, 1, 20);
+      provider.getAllUsers(1, 20, "ranking", "active", "");
     });
   }
 
@@ -54,6 +62,7 @@ class _ThreadDetailState extends State<ThreadDetail> {
             child: CircularProgressIndicator(),
           );
         }
+
         return Padding(
           padding: const EdgeInsets.only(left: 10.0, right: 10, top: 10),
           child: Column(
@@ -134,6 +143,123 @@ class _ThreadDetailState extends State<ThreadDetail> {
                   ),
                 ),
               ),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Row(
+                  children: [
+                    Text(
+                      'Moderator :',
+                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
+                    ),
+                    SizedBox(width: 10),
+                    InkWell(
+                      onTap: () {
+                        SlideDialog.showSlideDialog(
+                          context: context,
+                          backgroundColor: Colors.white,
+                          pillColor: Color(0xff4C74D9),
+                          transitionDuration: Duration(milliseconds: 300),
+                          child: Column(
+                            children: [
+                              Text(
+                                "Moderator",
+                                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+                              ),
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                height: MediaQuery.of(context).size.height * 0.58,
+                                child: ListView.builder(
+                                  itemCount: value.moderatos?.length,
+                                  itemBuilder: (context, index) {
+                                    return RemoveCard(
+                                      id: value.thread![widget.index].iD!,
+                                      context: context,
+                                      index: index,
+                                      picture: 'assets/images/exampleAvatar.png',
+                                      name: '${value.moderatos?[index].name}',
+                                      subName: '${value.moderatos?[index].username}',
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      child: Container(
+                        height: MediaQuery.of(context).size.height * 0.05,
+                        width: MediaQuery.of(context).size.width * 0.33,
+                        child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: value.moderatos?.length,
+                            itemBuilder: (context, index) {
+                              return CircleAvatar(
+                                foregroundColor: Colors.transparent,
+                                backgroundColor: Colors.transparent,
+                                child: Image.asset(
+                                  'assets/images/exampleAvatar.png',
+                                  scale: 0.5,
+                                ),
+                              );
+                            }),
+                      ),
+                    ),
+                    Container(
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(Color(0xff4C74D9)),
+                              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                              )),
+                          child: Text(
+                            'Add as Moderator',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.white, fontSize: 16),
+                          ),
+                          onPressed: () {
+                            SlideDialog.showSlideDialog(
+                              context: context,
+                              backgroundColor: Colors.white,
+                              pillColor: Color(0xff4C74D9),
+                              transitionDuration: Duration(milliseconds: 300),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    "Add as Moderator",
+                                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+                                  ),
+                                  Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 20),
+                                    height: MediaQuery.of(context).size.height * 0.58,
+                                    child: ListView.builder(
+                                      itemCount: value.users?.length,
+                                      itemBuilder: (context, index) {
+                                        return ModeratorCard(
+                                          id: value.thread![widget.index].iD!,
+                                          context: context,
+                                          index: index,
+                                          picture: 'assets/images/exampleAvatar.png',
+                                          name: '${value.users?[index].name}',
+                                          subName: '${value.users?[index].username}',
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               TextButton.icon(
                 style: TextButton.styleFrom(
                   textStyle: const TextStyle(color: Colors.blue),
@@ -192,7 +318,27 @@ class _ThreadDetailState extends State<ThreadDetail> {
                                       '@${value.comment?[index].username}',
                                       style: TextStyle(color: Colors.black.withOpacity(0.6)),
                                     ),
-                                    trailing: IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert))),
+                                    trailing: IconButton(
+                                        onPressed: () {
+                                          CoolAlert.show(
+                                            context: context,
+                                            type: CoolAlertType.confirm,
+                                            text: 'Do you want to report this user ?',
+                                            confirmBtnText: 'Yes',
+                                            cancelBtnText: 'No',
+                                            confirmBtnColor: Colors.red,
+                                            onConfirmBtnTap: () async {
+                                              var provider = Provider.of<ThreadProvider>(context, listen: false);
+                                              Navigator.pop(context);
+                                              await provider.postReport("${value.comment?[index].username}",
+                                                  "${value.comment?[index].iD}", "Hate Speech");
+
+                                              await value.getCommentThreadById(
+                                                  "${provider.thread?[widget.index].iD}", 1, 20);
+                                            },
+                                          );
+                                        },
+                                        icon: const Icon(Icons.remove_moderator))),
                                 Text(
                                   '${value.comment?[index].comment}',
                                   style: TextStyle(color: Colors.black.withOpacity(0.6)),

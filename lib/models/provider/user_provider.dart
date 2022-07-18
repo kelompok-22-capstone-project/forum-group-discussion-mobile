@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:moot/models/api/service.dart';
-import 'package:moot/models/categories.dart';
-import 'package:moot/models/comment.dart';
 import 'package:moot/models/thread.dart';
 import 'package:moot/models/user.dart';
 
@@ -98,6 +96,20 @@ class UserProvider extends ChangeNotifier {
     } catch (e) {
       changeState(UserProviderState.error);
       print('error bos 3 $e');
+      notifyListeners();
+    }
+  }
+
+  Future<void> putFollowUser(String username) async {
+    changeState(UserProviderState.loading);
+    try {
+      await service.putFollowUser(username);
+
+      changeState(UserProviderState.none);
+      notifyListeners();
+    } catch (e) {
+      changeState(UserProviderState.error);
+      print('error bos $e');
       notifyListeners();
     }
   }

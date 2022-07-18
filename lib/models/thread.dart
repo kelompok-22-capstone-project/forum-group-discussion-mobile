@@ -187,3 +187,156 @@ class ThreadPostData {
     return data;
   }
 }
+
+class ThreadById {
+  String? status;
+  String? message;
+  ThreadByIdData? data;
+
+  ThreadById({this.status, this.message, this.data});
+
+  ThreadById.fromJson(Map<String, dynamic> json) {
+    status = json['status'];
+    message = json['message'];
+    data = json['data'] != null ? new ThreadByIdData.fromJson(json['data']) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['status'] = this.status;
+    data['message'] = this.message;
+    if (this.data != null) {
+      data['data'] = this.data!.toJson();
+    }
+    return data;
+  }
+}
+
+class ThreadByIdData {
+  String? iD;
+  String? title;
+  int? totalLike;
+  int? totalFollower;
+  int? totalComment;
+  String? creatorID;
+  String? creatorUsername;
+  String? creatorName;
+  String? categoryID;
+  String? categoryName;
+  String? publishedOn;
+  bool? isLiked;
+  bool? isFollowed;
+  List<Moderators>? moderators;
+  String? description;
+  int? totalViewer;
+
+  ThreadByIdData(
+      {this.iD,
+      this.title,
+      this.totalLike,
+      this.totalFollower,
+      this.totalComment,
+      this.creatorID,
+      this.creatorUsername,
+      this.creatorName,
+      this.categoryID,
+      this.categoryName,
+      this.publishedOn,
+      this.isLiked,
+      this.isFollowed,
+      this.moderators,
+      this.description,
+      this.totalViewer});
+
+  ThreadByIdData.fromJson(Map<String, dynamic> json) {
+    iD = json['ID'];
+    title = json['title'];
+    totalLike = json['totalLike'];
+    totalFollower = json['totalFollower'];
+    totalComment = json['totalComment'];
+    creatorID = json['creatorID'];
+    creatorUsername = json['creatorUsername'];
+    creatorName = json['creatorName'];
+    categoryID = json['categoryID'];
+    categoryName = json['categoryName'];
+    publishedOn = json['publishedOn'];
+    isLiked = json['isLiked'];
+    isFollowed = json['isFollowed'];
+    if (json['moderators'] != null) {
+      moderators = <Moderators>[];
+      json['moderators'].forEach((v) {
+        moderators!.add(new Moderators.fromJson(v));
+      });
+    }
+    description = json['description'];
+    totalViewer = json['totalViewer'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['ID'] = this.iD;
+    data['title'] = this.title;
+    data['totalLike'] = this.totalLike;
+    data['totalFollower'] = this.totalFollower;
+    data['totalComment'] = this.totalComment;
+    data['creatorID'] = this.creatorID;
+    data['creatorUsername'] = this.creatorUsername;
+    data['creatorName'] = this.creatorName;
+    data['categoryID'] = this.categoryID;
+    data['categoryName'] = this.categoryName;
+    data['publishedOn'] = this.publishedOn;
+    data['isLiked'] = this.isLiked;
+    data['isFollowed'] = this.isFollowed;
+    if (this.moderators != null) {
+      data['moderators'] = this.moderators!.map((v) => v.toJson()).toList();
+    }
+    data['description'] = this.description;
+    data['totalViewer'] = this.totalViewer;
+    return data;
+  }
+}
+
+class Moderators {
+  String? moderatorID;
+  String? userId;
+  String? username;
+  String? email;
+  String? name;
+  String? role;
+  bool? isActive;
+  String? registeredOn;
+
+  Moderators(
+      {this.moderatorID,
+      this.userId,
+      this.username,
+      this.email,
+      this.name,
+      this.role,
+      this.isActive,
+      this.registeredOn});
+
+  Moderators.fromJson(Map<String, dynamic> json) {
+    moderatorID = json['moderatorID'];
+    userId = json['userId'];
+    username = json['username'];
+    email = json['email'];
+    name = json['name'];
+    role = json['role'];
+    isActive = json['isActive'];
+    registeredOn = json['registeredOn'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['moderatorID'] = this.moderatorID;
+    data['userId'] = this.userId;
+    data['username'] = this.username;
+    data['email'] = this.email;
+    data['name'] = this.name;
+    data['role'] = this.role;
+    data['isActive'] = this.isActive;
+    data['registeredOn'] = this.registeredOn;
+    return data;
+  }
+}

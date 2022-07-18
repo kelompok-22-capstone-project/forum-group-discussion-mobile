@@ -1,12 +1,12 @@
-import 'dart:ui';
+import 'package:cool_alert/cool_alert.dart';
 
 import 'package:flutter/material.dart';
-import 'package:moot/components/CategoryButton.dart';
-import 'package:moot/components/ContentTextButton.dart';
+
+import 'package:moot/models/navigation_item.dart';
 import 'package:moot/models/provider/categorie_provider.dart';
-import 'package:moot/models/provider/thread_provider.dart';
-import 'package:moot/screens/homepage/user/empty_result.dart';
-import 'package:moot/screens/homepage/user/threadDetail.dart';
+
+import 'package:moot/screens/homepage/admin/categoryAddForm.dart';
+
 import 'package:provider/provider.dart';
 
 class CategoryDetailAdmin extends StatefulWidget {
@@ -34,10 +34,44 @@ class _CategoryDetailAdminState extends State<CategoryDetailAdmin> {
         title: const Text('Category Details', style: TextStyle(color: Colors.black)),
         iconTheme: const IconThemeData(color: Colors.black),
         actions: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.more_vert),
-          )
+          Consumer<CategorieProvider>(builder: (context, provider, _) {
+            return PopupMenuButton<ItemMenu>(
+                onSelected: (value) {
+                  if (value == ItemMenu.edit) {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                CategoryAddForm(id: widget.id, desc: widget.desc, categoryName: widget.categoryName)));
+                  } else if (value == ItemMenu.delete) {
+                    CoolAlert.show(
+                      context: context,
+                      type: CoolAlertType.confirm,
+                      text: 'Do you want to delete this category ?',
+                      confirmBtnText: 'Yes',
+                      cancelBtnText: 'No',
+                      confirmBtnColor: Colors.green,
+                      onConfirmBtnTap: () async {
+                        await provider.deleteCategorie(widget.id);
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                        CoolAlert.show(context: context, type: CoolAlertType.success);
+                        await provider.getAllCategorie();
+                      },
+                    );
+                  }
+                },
+                itemBuilder: (context) => [
+                      PopupMenuItem(
+                        value: ItemMenu.edit,
+                        child: Text('Edit Category'),
+                      ),
+                      PopupMenuItem(
+                        value: ItemMenu.delete,
+                        child: Text('Delete Category'),
+                      ),
+                    ]);
+          })
         ],
       ),
       body: Consumer<CategorieProvider>(builder: (context, value, _) {
@@ -101,7 +135,7 @@ class _CategoryDetailAdminState extends State<CategoryDetailAdmin> {
                     ),
                     ListTile(
                       title: Text(
-                        "Data",
+                        "Date",
                         style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20, color: Color(0xff4C74D9)),
                       ),
                       subtitle: Text(
